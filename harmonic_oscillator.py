@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# and produces output:
-# an array X of dimension 2 x (N+1) containing the solution at steps 0, 1, ..., N
 
 
 def H(x, y):
@@ -12,7 +10,7 @@ def H(x, y):
 def euler(x, y, dt):
     # One step Euler method
     X = x + dt*y
-    Y = y - dt*x
+    Y = y - dt*X
     return X, Y
 
 
@@ -65,4 +63,4 @@ def plotting(x0=2.2, y0=-1.0, dt=0.05, T=50.0,  use_scatter=True):
     plt.show()
 
 
-plotting(x0=2.2, y0=-1.0, dt=0.005, T=80.0, use_scatter=True)
+plotting(x0=2.2, y0=-1.0, dt=-0.005, T=80.0, use_scatter=True)
