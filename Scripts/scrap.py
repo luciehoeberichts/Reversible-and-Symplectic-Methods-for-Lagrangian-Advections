@@ -35,6 +35,14 @@ for i in range(5, 1):
 
 # dict["alpha"].append(2)
 # print(dict)
-for i in range(4):
+for i in range(4, 0, -1):
     print(i)
 print("hello")
+
+K = 3
+L = 3
+for i in range(1, K+1):
+    print(i)
+print("helo")
+for i in range(K, 0, -1):
+    print(i)
