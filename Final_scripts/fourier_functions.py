@@ -1,6 +1,7 @@
 import numpy as np
 
 
+# ----------------------------------COEFFICIENT GENERATOR-----------------
 def coefficient(K, L, mu, sigma, p):
     """
     Defines fixed coefficients for each combination of k,l.
@@ -10,6 +11,7 @@ def coefficient(K, L, mu, sigma, p):
         L (int): value to sum over.
         mu (float): mean of normal distribution.
         sigma (float): standard deviation.
+        p (float): degree for scaling.
 
     Returns:
         coefficients (dict[tuple]): keys are k, l pairs and values are
@@ -24,9 +26,10 @@ def coefficient(K, L, mu, sigma, p):
     return coefficients
 
 
+# ----------------------------------STREAM MAP--------------------------
 def psi(K, L, coefficients):
     """
-    Creates a heatmap of the stream function
+    Creates a heatmap of the stream function.
 
     Args:
         K (int): value to sum over.
@@ -36,6 +39,8 @@ def psi(K, L, coefficients):
     Returns:
         heatmap (np.ndarray): uses i, j coordinates and matches the value with
         the image of the stream function.
+        x_values (list[int]): grid axis.
+        y_values (lint[int]): grid axis.
     """
     x_values = np.linspace(0, 2*np.pi, 100)
     y_values = np.linspace(0, 2*np.pi, 100)
@@ -44,15 +49,8 @@ def psi(K, L, coefficients):
     X, Y = np.meshgrid(x_values, y_values)
     heatmap = np.zeros((len(x_values), len(y_values)), dtype=float)
 
-    # Took these out cuz was overriding.
-    # delta_x = 2*np.pi/100
-    # delta_y = 2*np.pi/100
-
     for i in range(len(x_values)):
         for j in range(len(y_values)):
-            # Took these out cuz was overriding (already in linspace)
-            # X[i, j] = i*delta_x
-            # Y[i, j] = j*delta_y
 
             sum = 0
             for k in range(1, K+1):
@@ -66,6 +64,7 @@ def psi(K, L, coefficients):
     return heatmap, x_values, y_values
 
 
+# ----------------------------------HALF STEP---------------------------
 def half_step(x, y, alpha, beta, k, l, d_tau, t, omega):
     """
     Movement function of one step.
@@ -93,12 +92,13 @@ def half_step(x, y, alpha, beta, k, l, d_tau, t, omega):
     y_new = y - d_tau*k*dH
 
     # WRAP
-    x_new = x_new % (2*np.pi)
-    y_new = y_new % (2*np.pi)
+    x_new = x_new #% (2*np.pi)
+    y_new = y_new #% (2*np.pi)
 
     return x_new, y_new
 
 
+# ----------------------------------FULL STEP---------------------------
 def full_step(x0, y0, t0, dt, K, L, coefficients, omega):
     """
     Runs the approximation over a single time step.
@@ -111,6 +111,7 @@ def full_step(x0, y0, t0, dt, K, L, coefficients, omega):
         K (int): value to sum over.
         L (int): value to sum over.
         coefficients (dict): dictionary computed by coefficient function.
+        omega (float): tidal pull.
 
     Returns:
         x (float): x coordinate after full time step.
@@ -131,7 +132,31 @@ def full_step(x0, y0, t0, dt, K, L, coefficients, omega):
     return x, y, t
 
 
+# ----------------------------------TRAJECTORY-------------------------------
 def trajectory(x0, y0, t0, dt, K, L, coefficients, N, saving, omega):
+    """"
+    Args:
+        x0 (float): x coordinate of initial point.
+        y0 (float): y coordinate of initial point.
+        t0 (float): initial time value.
+        dt (float): time step.
+        K (int): value to sum over.
+        L (int): value to sum over.
+        coefficients (dict): dictionary computed by coefficient function.
+        N (int): simulation time.
+        saving (bool): determines if the trajectory will be stored.
+        omega (float): tidal pull.
+
+    Returns:
+        if saving:
+            x_values (list[float]): the values for the x trajectory.
+            y_values (list[float]): the values for the y trajectory.
+            t_values (list[float]): the values for the time trajectory.
+        else:
+            x (float): x coordinate after full time step.
+            y (float): y coordinate after full time step.
+            t (float): updated time value.
+    """
     x, y, t = x0, y0, t0
 
     if saving:
@@ -151,10 +176,34 @@ def trajectory(x0, y0, t0, dt, K, L, coefficients, N, saving, omega):
         return x, y, t
 
 
+# ----------------------------------PERTURBATION------------------------
 def perturbation(
         M, x_values, y_values, epsilon, trajectory,
         t_values, dt, K, L, coefficients, N, omega, saving
         ):
+    """"
+    Adds the perturbation to the simulation.
+
+    Args:
+        M
+        x_values (list[float]): the values for the x trajectory.
+        y_values (list[float]): the values for the y trajectory.
+        epsilon (float): perturbation size.
+        trajectory (function): see line 136.
+        t_values (list[float]): the values for the time trajectory.
+        dt (float): time step.
+        K (int): value to sum over.
+        L (int): value to sum over.
+        coefficients (dict): dictionary computed by coefficient function.
+        N (int): simulation time.
+        omega (float): tidal pull.
+        saving (bool): determines if the trajectory will be stored.
+
+    Returns:
+        pert_back_x (list[float]): backwards x trajectory.
+        pert_back_y (list[float]): backwards y trajectory.
+    """
+
     back_x = []
     back_y = []
 
@@ -163,8 +212,8 @@ def perturbation(
         x1_tilde = x_values[-1] + epsilon*np.cos(theta)
         y1_tilde = y_values[-1] + epsilon*np.sin(theta)
 
-        x1_tilde = x1_tilde % (2*np.pi)
-        y1_tilde = y1_tilde % (2*np.pi)
+        x1_tilde = x1_tilde
+        y1_tilde = y1_tilde
 
         pert_backwards_trajectory = trajectory(
                                 x1_tilde, y1_tilde, t_values[-1], -dt,
