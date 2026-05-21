@@ -106,11 +106,11 @@ if plot and saving:
         plt.scatter(
             pert_back_x[-1],
             pert_back_y[-1],
-            label='Perturbed Return Point')
+            label=r"$x_r^{(m)}$")
         plt.scatter(
             back_x,
             back_y,
-            label='all Perturbed Return Point')
+            label=r"$x_r^{(m)}$")
     plt.figure(figsize=(13, 7))
 
 # Stream function as background.
@@ -152,11 +152,11 @@ if plot and saving:
         plt.scatter(
             pert_back_x[-1] % (2*np.pi),
             pert_back_y[-1] % (2*np.pi),
-            label="Ensemble Perturbed Return Point")
+            label=r"$\bar x_r$")
         for i in range(len(back_x)):
 
             if i == 0:
-                label = "All Perturbed Return Points"
+                label = r"$x_r^{(m)}$"
             else:
                 label = None
 
@@ -170,19 +170,19 @@ if plot and saving:
     plt.scatter(
         x_values[0] % (2*np.pi),
         y_values[0] % (2*np.pi),
-        label='Initial Point $(1,1)$'
+        label=r"$x_0 (1,1)$"
     )
 
     plt.scatter(
         x_values[-1] % (2*np.pi),
         y_values[-1] % (2*np.pi),
-        label='Forward Final Point'
+        label=r"$x_f$"
     )
 
     plt.scatter(
         x_back[-1] % (2*np.pi),
         y_back[-1] % (2*np.pi),
-        label='Return Point'
+        label=r"$x_r$"
     )
 
     plt.xlabel("x", fontsize=16)

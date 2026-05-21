@@ -26,12 +26,12 @@ f.composition: uses the self-adjoint Störmer-Verlet method.
 """
 
 # ----------------------------------OPTIONS----------------------------------
-flow = "pendulum"  # Choice of Hamiltonian.
-forward_choice = f.composition_euler  # Choice of forward method.
-backward_choice = f.composition_euler  # Choice of bakward method.
+flow = "sine"  # Choice of Hamiltonian.
+forward_choice = f.symplectic_euler  # Choice of forward method.
+backward_choice = f.symplectic_euler  # Choice of bakward method.
 # Retrieves the corresponding partial derivatives.
 partial_x, partial_y = f.partials(flow)
-perturbation = True  # Choice if perturbation before return.
+perturbation = False  # Choice if perturbation before return.
 max_traj = False  # Choice if plot the the trajectory of largest distance.
 
 dt = 0.01  # Time step size.
@@ -147,12 +147,14 @@ if max_traj:
 
 plt.figure(figsize=(8, 6))  # Plotting heatmap.
 plt.imshow(
-    np.log(heatmap),
+    heatmap,
     # Edge are the extent of the map
     extent=(x_values[0], x_values[-1], y_values[0], y_values[-1]),
     origin="lower",  # (0,0) is bottom left
     aspect="equal",  # Square pixel
-    cmap="coolwarm"  # Colour scheme other option viridis
+    cmap="coolwarm",  # Colour scheme other option viridis
+    vmin=0,
+    vmax=0.30
 )
 cbar = plt.colorbar()
 cbar.set_label("Distance", fontsize=20)
